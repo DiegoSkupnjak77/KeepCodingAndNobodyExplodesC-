@@ -1,0 +1,56 @@
+﻿@page "/"
+@using KeepQueryingAndNobodyExplodes.Components.Layout
+@using Persistance.Services
+@using System.Data
+@using System.Dynamic
+@inject CommandService commandService;
+
+<div class="container-fluid">
+    <div class="row px-3">
+        <div class="col-md-6 col-lg-4 p-3">
+            <RadzenCard>
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Write the query</RadzenText>
+                <RadzenTextArea @bind-Value=textArea Placeholder="Enter here..." class="w-100" aria-label="TextArea with placeholder" />
+            </RadzenCard>
+             <RadzenButton  Text="Execute Query" Click="@(async () => await ExecuteQueryAsync())" />
+        </div>
+        <div>
+            <QueryResultGrid @ref=queryGrid/>
+        </div>
+     </div>
+</div>
+
+@code
+{
+
+    public List<IDictionary<string, object>> data { get; set; } = new();
+    public IDictionary<string, Type> columns { get; set; } = new Dictionary<string, Type>();
+    private DataTable dataTable;
+    string textArea;
+    QueryResultGrid queryGrid;
+
+    private async Task ExecuteQueryAsync()
+    {
+        data.Clear();
+        columns.Clear();
+        
+        textArea = textArea.Replace("\n", string.Empty).Trim();
+        try
+        {
+            dataTable = await commandService.ExecuteCommandAsync($"{textArea}");
+            
+            if (dataTable.Rows.Count == 0)
+            {
+                return;
+            }
+
+            await queryGrid.PopulateGridAsync(dataTable);
+
+            textArea = string.Empty;            
+        }
+        catch
+        {
+            return;
+        }
+    }
+}
