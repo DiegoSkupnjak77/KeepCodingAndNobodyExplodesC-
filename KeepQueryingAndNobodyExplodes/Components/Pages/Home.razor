@@ -15,7 +15,7 @@
              <RadzenButton  Text="Execute Query" Click="@(async () => await ExecuteQueryAsync())" />
         </div>
         <div>
-            <QueryResultGrid @ref=queryGrid/>
+            <QuickgridComponent @ref="quickGrid"/>
         </div>
      </div>
 </div>
@@ -25,27 +25,27 @@
 
     public List<IDictionary<string, object>> data { get; set; } = new();
     public IDictionary<string, Type> columns { get; set; } = new Dictionary<string, Type>();
-    private DataTable dataTable;
+    private DataTable dataTable = new ();
     string textArea;
-    QueryResultGrid queryGrid;
+    QuickgridComponent quickGrid;
 
     private async Task ExecuteQueryAsync()
     {
         data.Clear();
         columns.Clear();
-        
+
         textArea = textArea.Replace("\n", string.Empty).Trim();
         try
         {
             dataTable = await commandService.ExecuteCommandAsync($"{textArea}");
-            
+
             if (dataTable.Rows.Count == 0)
             {
                 return;
             }
 
-            await queryGrid.PopulateGridAsync(dataTable);
-
+            await quickGrid.UpdateDataTableAsync(dataTable);
+             
             textArea = string.Empty;            
         }
         catch

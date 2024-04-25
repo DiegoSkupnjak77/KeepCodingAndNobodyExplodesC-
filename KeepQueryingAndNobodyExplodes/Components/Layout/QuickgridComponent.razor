@@ -1,0 +1,57 @@
+﻿@using System.Data;
+@using System.Dynamic
+
+<QuickGrid TGridItem="IDictionary<string, object>" Items="data.AsQueryable<IDictionary<string, object>>()" @ref=grid>
+    @foreach (var column in columns)
+    {
+        <PropertyColumn  Property="@(p => p[column.Key])" Title="@column.Key" />
+    }
+</QuickGrid>
+
+@code {
+    public DataTable dataTable { get; set; } = new();
+    public List<IDictionary<string, object>> data { get; set; } = new();
+    public IDictionary<string, Type> columns { get; set; } = new Dictionary<string, Type>();
+    QuickGrid<IDictionary<string, object>> grid;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await grid.RefreshDataAsync();
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task UpdateDataTableAsync(DataTable newDataTable)
+    {
+        if (dataTable != newDataTable)
+        {
+            dataTable = newDataTable;
+            await grid.RefreshDataAsync();
+            PopulateData();
+            
+            StateHasChanged();
+        }
+    }
+
+    private void PopulateData()
+    {
+        data = new List<IDictionary<string, object>>();
+        columns = new Dictionary<string, Type>();
+
+        foreach (DataColumn column in dataTable.Columns)
+        {
+            columns.Add(column.ColumnName, column.DataType);
+        }
+
+        foreach (DataRow row in dataTable.Rows)
+        {
+            var rowDictionary = new Dictionary<string, object>();
+
+            foreach (DataColumn column in dataTable.Columns)
+            {
+                rowDictionary.Add(column.ColumnName, row[column]);
+            }
+
+            data.Add(rowDictionary);
+        }
+    }
+}

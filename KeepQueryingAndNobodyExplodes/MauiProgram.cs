@@ -18,7 +18,6 @@ namespace KeepQueryingAndNobodyExplodes
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddScoped<CommandService>();
 
-
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
