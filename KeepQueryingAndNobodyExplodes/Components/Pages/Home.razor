@@ -1,9 +1,11 @@
 ﻿@page "/"
 @using KeepQueryingAndNobodyExplodes.Components.Layout
+@using Persistance.Model
 @using Persistance.Services
 @using System.Data
 @using System.Dynamic
 @inject CommandService commandService;
+@inject DataService dataService;
 
 <div class="container-fluid">
     <div class="row px-3">
@@ -13,6 +15,7 @@
                 <RadzenTextArea @bind-Value=textArea Placeholder="Enter here..." class="w-100" aria-label="TextArea with placeholder" />
             </RadzenCard>
              <RadzenButton  Text="Execute Query" Click="@(async () => await ExecuteQueryAsync())" />
+            <RadzenButton Text="New Game" Click="@(async () => await InitialLoadAsync())" />
         </div>
         <div>
             <QuickgridComponent @ref="quickGrid"/>
@@ -45,12 +48,19 @@
             }
 
             await quickGrid.UpdateDataTableAsync(dataTable);
-             
+
             textArea = string.Empty;            
         }
         catch
         {
             return;
         }
+    }
+
+    private async Task InitialLoadAsync()
+    {
+        await dataService.InitialDataAsync();
+        textArea = "Select 'Reset successfull!'";
+        await ExecuteQueryAsync();
     }
 }

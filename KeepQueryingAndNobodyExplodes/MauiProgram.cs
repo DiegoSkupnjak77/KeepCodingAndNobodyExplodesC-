@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Persistance.Model;
 using Persistance.Services;
 
 namespace KeepQueryingAndNobodyExplodes
@@ -17,9 +18,11 @@ namespace KeepQueryingAndNobodyExplodes
 
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddScoped<CommandService>();
+            builder.Services.AddScoped<PersistanceContext>();
+            builder.Services.AddScoped<DataService>();
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 
