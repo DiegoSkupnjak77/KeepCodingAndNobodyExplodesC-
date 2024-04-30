@@ -6,12 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace Persistance.Services
 {
     public class CommandService
     {
-        public string ConnectionString { get; set; } = "Server=VDUS4DEVWIN7173\\SQLEXPRESS;Database=BombingGame;Trusted_Connection=True;";
+        private readonly IConfiguration Configuration;
+
+        public CommandService(IConfiguration configuration)
+        {
+            Configuration = configuration;
+            ConnectionString = "Server=VDUS4DEVWIN7173\\SQLEXPRESS;Database=BombingGame;Trusted_Connection=True;TrustServerCertificate=True;";
+        }
+        public string ConnectionString { get; set; } 
 
         public async Task<DataTable> ExecuteCommandAsync(string sqlCommand)
         {
